@@ -1,0 +1,21 @@
+server:
+  port: 9100
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 118.31.17.219:8848
+        register-enabled: true
+    gateway:
+      routes:
+        - id: here-gateway_1
+          uri: lb://meta-domea
+          predicates:
+            - Path=/domea/**
+        - id: here-gateway_2
+          uri: lb://meta-domeb
+          predicates:
+            - Path=/domeb/**
+  application:
+    name: here-gateway

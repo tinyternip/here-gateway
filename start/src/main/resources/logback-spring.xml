@@ -1,0 +1,89 @@
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!--定义参数，从application配置文件获取-->
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name"
+                    defaultValue="app"/>
+    <springProperty scope="context" name="LOG_PATH" source="logging.file.path"
+                    defaultValue="./logs"/>
+    <!--阿里云日志服务-->
+    <!--<springProperty scope="context" name="SLS_ENDPOINT" source="system.sls.endpoint"/>
+    <springProperty scope="context" name="SLS_ACCESS_KEY_ID" source="system.sls.accessKeyId"/>
+    <springProperty scope="context" name="SLS_ACCESS_KEY_SECRET" source="system.sls.accessKeySecret"/>
+    <springProperty scope="context" name="SLS_PROJECT" source="system.sls.project"/>
+    <springProperty scope="context" name="SLS_LOG_STORE" source="system.sls.logStore"/>-->
+
+    <property name="LOG_FILE" value="${LOG_PATH}/${APP_NAME}/application.log"/>
+
+    <property name="LOG_PATTERN" value="[%d][%-5p][%X{REQUEST_ID}][%X{REQUEST_URL}][%t] %m%n"/>
+
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--定义日志输出的路径-->
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+            <maxFileSize>50MB</maxFileSize>
+            <totalSizeCap>20GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+    <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
+
+    <!--<appender name="ALIYUN" class="com.aliyun.openservices.log.logback.LoghubAppender">
+        &lt;!&ndash;必选项&ndash;&gt;
+        &lt;!&ndash; 账号及网络配置 &ndash;&gt;
+        <endpoint>${SLS_ENDPOINT}</endpoint>
+        <accessKeyId>${SLS_ACCESS_KEY_ID}</accessKeyId>
+        <accessKeySecret>${SLS_ACCESS_KEY_SECRET}</accessKeySecret>
+
+        &lt;!&ndash; sls 项目配置 &ndash;&gt;
+        <project>${SLS_PROJECT}</project>
+        <logStore>${SLS_LOG_STORE}</logStore>
+        &lt;!&ndash;必选项 (end)&ndash;&gt;
+
+        &lt;!&ndash; 可选项 详见 '参数说明'&ndash;&gt;
+        <totalSizeInBytes>104857600</totalSizeInBytes>
+        <maxBlockMs>0</maxBlockMs>
+        <ioThreadCount>8</ioThreadCount>
+        <batchSizeThresholdInBytes>524288</batchSizeThresholdInBytes>
+        <batchCountThreshold>4096</batchCountThreshold>
+        <lingerMs>2000</lingerMs>
+        <retries>10</retries>
+        <baseRetryBackoffMs>100</baseRetryBackoffMs>
+        <maxRetryBackoffMs>50000</maxRetryBackoffMs>
+
+        &lt;!&ndash; 可选项 通过配置 encoder 的 pattern 自定义 log 的格式 &ndash;&gt;
+        <encoder>
+            <pattern>%d %-5level [%thread] %logger{0}: %msg</pattern>
+        </encoder>
+
+        <mdcFields>REQUEST_ID,REQUEST_URL</mdcFields>
+
+        &lt;!&ndash; 可选项 设置 time 字段呈现的格式 &ndash;&gt;
+        <timeFormat>yyyy-MM-dd HH:mm:ss.sss</timeFormat>
+        &lt;!&ndash; 可选项 设置 time 字段呈现的时区 &ndash;&gt;
+        <timeZone>Asia/Shanghai</timeZone>
+    </appender>-->
+
+    <!--rootLogger是默认的logger-->
+    <root level="INFO">
+        <!--定义了两个appender，日志会通过往这两个appender里面写-->
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <!--开发环境把日志存到阿里云SLS-->
+        <!--<springProfile name="dev">
+            <appender-ref ref="ALIYUN"/>
+        </springProfile>-->
+    </root>
+</configuration>

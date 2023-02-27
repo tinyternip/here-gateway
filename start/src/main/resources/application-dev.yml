@@ -1,0 +1,22 @@
+server:
+  port: 9100
+
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
+        username: nacos
+        password: nacos
+    gateway:
+      routes:
+        - id: here-gateway_1
+          uri: lb://meta-domea
+          predicates:
+            - Path=/domea/**
+        - id: here-gateway_2
+          uri: lb://meta-domeb
+          predicates:
+            - Path=/domeb/**
+  application:
+    name: here-gateway
